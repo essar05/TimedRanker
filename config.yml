@@ -1,4 +1,7 @@
 promote:
-   default: #promote from this group
-       to: user #to this group
-       minutesreq: 5 #after 5 minutes of gameplay time
+   group1: #Group to be promoted from
+       to: group2 #Group to be promote to
+       minutesreq: 5 #After x minutes of gameplay time
+   group2: #Group to be promoted from
+       to: group3 #Group to be promote to
+       minutesreq: 20 #After x minutes of gameplay time
