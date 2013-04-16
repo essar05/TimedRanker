@@ -14,6 +14,7 @@ permissions:
             tranker.top: true
             tranker.purge: true
             tranker.reload: true
+        default: op
     tranker.playtime.*:
         description: Can see anyone's gameplay time
         children:
@@ -27,7 +28,7 @@ permissions:
         default: true
     tranker.playtime.others:
         description: See other players' gameplay time
-        default: false
+        default: op
     tranker.settime:
         description: Change playtime for a player
         default: op
