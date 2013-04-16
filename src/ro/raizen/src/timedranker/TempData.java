@@ -46,6 +46,7 @@ public class TempData {
 				plugin.clog.info(String.format("[%s] %s", plugin.getDescription().getName(), e.getMessage()));
 			}
 		}
+		plugin.debugInfo("TempData saved to database");
 	}
 	
 	public void purge() {

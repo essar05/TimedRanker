@@ -25,9 +25,17 @@ public class UpdateTask extends TimerTask {
 				Playtime = 0; //set it to 0, if the player isn't in the temp data hashmap
 			}
 			
-			tempdata.set(PlayerName, Playtime + 1); //add 1 minute to the tempdata
-		}	
-		
+			int toCount = 1;
+			
+			if(plugin.getConfig().getBoolean("essentialsAfk") == true && plugin.isAfk(PlayerName)) {
+				toCount = 0; //don't count player if he's AFK;
+			}
+			
+			if(toCount == 1) {
+				tempdata.set(PlayerName, Playtime + 1); //add 1 minute to the tempdata
+			}
+		}
+		plugin.debugInfo("TempData updated");
 	}
 	
 }

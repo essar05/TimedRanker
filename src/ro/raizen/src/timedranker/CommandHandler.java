@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,9 +17,11 @@ import org.bukkit.entity.Player;
 public class CommandHandler implements CommandExecutor {
 	
 	private TimedRanker plugin;
+	private Permission perms;
 	
-	public CommandHandler(TimedRanker plugin) {
+	public CommandHandler(TimedRanker plugin, Permission perms) {
 		this.plugin = plugin;
+		this.perms = perms;
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[]) 
@@ -32,6 +36,9 @@ public class CommandHandler implements CommandExecutor {
 				}
 				if(sender.hasPermission("tranker.top")) {
 					sender.sendMessage(String.format("[%s] /tranker top - View a top 10 of most-online players", plugin.getDescription().getName()));
+				}
+				if(sender.hasPermission("tranker.left")) {
+					sender.sendMessage(String.format("[%s] /tranker left - View time left until next promotion", plugin.getDescription().getName()));
 				}
 				if(sender.hasPermission("tranker.settime")) { 
 					sender.sendMessage(String.format("[%s] /tranker settime <player> <time> - Set minutes played for a player", plugin.getDescription().getName()));
@@ -55,11 +62,12 @@ public class CommandHandler implements CommandExecutor {
 							if(sender instanceof Player) {
 								if(sender.hasPermission("tranker.playtime.me")) {  
 									ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + sender.getName() + "';");
-									int playtime = 0;
 									if(result.getInt("cnt") > 0) {
-										playtime = result.getInt("playtime");
+										int playtime = result.getInt("playtime");
+										sender.sendMessage(String.format("[%s] Your gameplay time is%s", plugin.getDescription().getName(), parseTime(playtime)));
+									} else {
+										sender.sendMessage(String.format("[%s] Invalid player name or database not updated.", plugin.getDescription().getName()));
 									}
-									sender.sendMessage(String.format("[%s] Your gameplay time is%s", plugin.getDescription().getName(), parseTime(playtime)));
 									result.close();
 								}
 								else {
@@ -98,18 +106,19 @@ public class CommandHandler implements CommandExecutor {
 									ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt FROM playtime WHERE playername = '" + player + "';");
 									if(result.getInt("cnt") > 0) {
 										plugin.sqlite.query("UPDATE playtime SET playtime='" + minutes +"' WHERE playername = '" + player + "';");
-										sender.sendMessage(String.format("[%s] Set %s minutes played for player %s", plugin.getDescription().getName(), minutes, player));
+										sender.sendMessage(String.format("[%s] Set%s played for player %s", plugin.getDescription().getName(), parseTime(minutes), player));
 									}
 									else {
-										sender.sendMessage(String.format("[%s] The specified player does not exist", plugin.getDescription().getName()));
+										plugin.sqlite.query("INSERT INTO playtime (playername, playtime) VALUES('" + player + "', '" + minutes + "');");
+										sender.sendMessage(String.format("[%s] Created entry for %s with%s played", plugin.getDescription().getName(), player, parseTime(minutes)));
 									}
 									result.close();
 								} catch (NumberFormatException ex) {
-									sender.sendMessage(String.format("[%s] The time parameter must be an integer", plugin.getDescription().getName()));
+									sender.sendMessage(String.format("[%s] The minutes parameter must be an integer", plugin.getDescription().getName()));
 							    }
 								
 							} else {
-								sender.sendMessage(String.format("[%s] Usage: /tranker settime <player> <time>", plugin.getDescription().getName()));
+								sender.sendMessage(String.format("[%s] Usage: /tranker settime <player> <minutes>", plugin.getDescription().getName()));
 							}
 						}
 						break;
@@ -128,6 +137,38 @@ public class CommandHandler implements CommandExecutor {
 							}
 						} else {
 							sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+						}
+						break;
+					case "left":
+						if(sender instanceof Player) {
+							if(sender.hasPermission("tranker.left")) {
+								String currentGroup = perms.getPrimaryGroup((Player) sender); //get player's current group
+								if(currentGroup == null) currentGroup = "default"; //if it's null, we'll set it to default
+								if(plugin.getConfig().contains("promote." + currentGroup)) {
+									int minReq = plugin.timeInMinutes(plugin.getConfig().getString("promote." + currentGroup + ".timeReq")); //get the required minutes played from the config
+									String promoteTo = plugin.getConfig().getString("promote." + currentGroup + ".to"); //get the group the player must be ranked-up to
+									ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + sender.getName() + "';");
+									if(result.getInt("cnt") > 0) {
+										if(minReq - result.getInt("playtime") > 0) {
+											String minLeft = parseTime(minReq - result.getInt("playtime")); //minutes left to play
+											sender.sendMessage(String.format("[%s] You have%s left to play until you get promoted to %s", plugin.getDescription().getName(), minLeft, promoteTo));
+										}
+										else {
+											sender.sendMessage(String.format("[%s] You should get promoted to %s in a few minutes", plugin.getDescription().getName(), promoteTo));
+										}
+									} else {
+										String minLeft = parseTime(minReq); //minutes left to play
+										sender.sendMessage(String.format("[%s] You have%s left to play until you get promoted to %s", plugin.getDescription().getName(), minLeft, promoteTo));
+									}
+								}
+								else {
+									sender.sendMessage(String.format("[%s] You don't have any promotions pending", plugin.getDescription().getName()));
+								}
+							} else {
+								sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+							}
+						} else {
+							sender.sendMessage(String.format("[%s] Only players can use this command", plugin.getDescription().getName()));
 						}
 						break;
 					case "purge":

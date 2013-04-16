@@ -1,6 +1,6 @@
 name: TimedRanker
 main: ro.raizen.src.timedranker.TimedRanker
-version: 1.0
+version: 1.1
 description: Promotes players based on total online time.
 commands:
     tranker:
@@ -16,25 +16,28 @@ permissions:
             tranker.reload: true
         default: op
     tranker.playtime.*:
-        description: Can see anyone's gameplay time
+        description: Can use /tranker playtime [player]
         children:
             tranker.playtime.me: true
             tranker.playtime.others: true
     tranker.playtime.me:
-        description: See your own gameplay time
+        description: Can use /tranker playtime
         default: true
     tranker.top:
-        description: Top 10 most-online players
+        description: Can use /tranker top
+        default: true
+    tranker.left:
+        description: Can use /tranker left
         default: true
     tranker.playtime.others:
-        description: See other players' gameplay time
+        description: Can use /tranker <player>
         default: op
     tranker.settime:
-        description: Change playtime for a player
+        description: Can use /tranker settime <player> <minutes>
         default: op
     tranker.purge:
-        description: Purge playtime database
+        description: Can use /tranker purge
         default: op        
     tranker.reload:
-        description: Reload plugin configuration
+        description: Can use /tranker reload
         default: op
