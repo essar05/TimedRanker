@@ -1,6 +1,6 @@
 name: TimedRanker
 main: ro.raizen.src.timedranker.TimedRanker
-version: 1.1
+version: 1.2
 description: Promotes players based on total online time.
 commands:
     tranker:

@@ -20,7 +20,7 @@ public class UpdateRankTask implements Listener,Runnable {
 		this.plugin = plugin;
 		this.perms = perms;
 		this.tempdata = tempdata;
-		plugin.getServer().getScheduler().runTaskLater(plugin, this, 6005); //run task after 5 minutes and 1/4 seconds;
+		plugin.getServer().getScheduler().runTaskLater(plugin, this, 6005); //run task after 5 minutes and 1/4 seconds; 6005
 	}
 	
 	@EventHandler
@@ -56,7 +56,7 @@ public class UpdateRankTask implements Listener,Runnable {
 						String world = null;
 						perms.playerAddGroup(world, p.getName(), promoteTo); //add new group
 						perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
-						p.sendMessage("Congratulations ! You have been promoted to " + promoteTo + " !");
+						p.sendMessage(plugin.Prefix() + String.format(plugin.lang.getConfig().getString("PromotionMessage"), promoteTo));
 						plugin.debugInfo(p.getName() + " promoted");
 					}
 				}

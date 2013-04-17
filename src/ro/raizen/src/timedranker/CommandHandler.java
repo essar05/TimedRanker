@@ -1,8 +1,5 @@
 package ro.raizen.src.timedranker;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -11,7 +8,6 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
 public class CommandHandler implements CommandExecutor {
@@ -29,25 +25,25 @@ public class CommandHandler implements CommandExecutor {
 			//If there are no arguments, show a list of subcommands
 			if(args.length < 1) {
 				if(sender.hasPermission("tranker.playtime.others")) {
-					sender.sendMessage(String.format("[%s] /tranker playtime <player> - See player's gameplay time", plugin.getDescription().getName()));	
+					sender.sendMessage(plugin.Prefix() + "/tranker playtime <player> - See player's gameplay time");	
 				}
 				else if((sender instanceof Player) && sender.hasPermission("tranker.playtime.me")) {
-					sender.sendMessage(String.format("[%s] /tranker playtime - See your gameplay time", plugin.getDescription().getName()));
+					sender.sendMessage(plugin.Prefix() + "/tranker playtime - See your gameplay time");
 				}
 				if(sender.hasPermission("tranker.top")) {
-					sender.sendMessage(String.format("[%s] /tranker top - View a top 10 of most-online players", plugin.getDescription().getName()));
+					sender.sendMessage(plugin.Prefix() + "/tranker top - View a top 10 of most-online players");
 				}
 				if(sender.hasPermission("tranker.left")) {
-					sender.sendMessage(String.format("[%s] /tranker left - View time left until next promotion", plugin.getDescription().getName()));
+					sender.sendMessage(plugin.Prefix() + "/tranker left - View time left until next promotion");
 				}
 				if(sender.hasPermission("tranker.settime")) { 
-					sender.sendMessage(String.format("[%s] /tranker settime <player> <time> - Set minutes played for a player", plugin.getDescription().getName()));
+					sender.sendMessage(plugin.Prefix() + "/tranker settime <player> <time> - Set minutes played for a player");
 				}
 				if(sender.hasPermission("tranker.purge")) {
-					sender.sendMessage(String.format("[%s] /tranker purge - Purge database", plugin.getDescription().getName()));
+					sender.sendMessage(plugin.Prefix() + "/tranker purge - Purge database");
 				}
 				if(sender.hasPermission("tranker.reload")) {
-					sender.sendMessage(String.format("[%s] /tranker reload - Reload configuration", plugin.getDescription().getName()));
+					sender.sendMessage(plugin.Prefix() + "/tranker reload - Reload configuration");
 				}
 				return true;
 			}
@@ -64,30 +60,30 @@ public class CommandHandler implements CommandExecutor {
 									ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + sender.getName() + "';");
 									if(result.getInt("cnt") > 0) {
 										int playtime = result.getInt("playtime");
-										sender.sendMessage(String.format("[%s] Your gameplay time is%s", plugin.getDescription().getName(), parseTime(playtime)));
+										sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("PlaytimeMe"), parseTime(playtime)));
 									} else {
-										sender.sendMessage(String.format("[%s] Invalid player name or database not updated.", plugin.getDescription().getName()));
+										sender.sendMessage(plugin.Prefix() + "Invalid player name or database not updated.");
 									}
 									result.close();
 								}
 								else {
-									sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+									sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 								}
 							}
 							else {
-								sender.sendMessage(String.format("[%s] You must specify a player's name", plugin.getDescription().getName()));
+								sender.sendMessage(plugin.Prefix() + "You must specify a player's name");
 							}
 						} else if(args.length == 2) {
 							if(sender instanceof Player && !sender.hasPermission("tranker.playtime.others")) {
-								sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+								sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 							}
 							else {
 								ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + args[1] + "';");
 								if(result.getInt("cnt") > 0) {
 									int playtime = result.getInt("playtime");
-									sender.sendMessage(String.format("[%s] %s's gameplay time is%s", plugin.getDescription().getName(), args[1], parseTime(playtime)));
+									sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("PlaytimeOthers"), args[1], parseTime(playtime)));
 								} else {
-									sender.sendMessage(String.format("[%s] Invalid player name or database not updated.", plugin.getDescription().getName()));
+									sender.sendMessage(plugin.Prefix() + "Invalid player name or database not updated.");
 								}
 								result.close();
 							}
@@ -95,7 +91,7 @@ public class CommandHandler implements CommandExecutor {
 						break;
 					case "settime":
 						if(sender instanceof Player && !sender.hasPermission("tranker.settime")) {
-							sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 						}
 						else {
 							if(args.length == 3) {
@@ -106,19 +102,19 @@ public class CommandHandler implements CommandExecutor {
 									ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt FROM playtime WHERE playername = '" + player + "';");
 									if(result.getInt("cnt") > 0) {
 										plugin.sqlite.query("UPDATE playtime SET playtime='" + minutes +"' WHERE playername = '" + player + "';");
-										sender.sendMessage(String.format("[%s] Set%s played for player %s", plugin.getDescription().getName(), parseTime(minutes), player));
+										sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("SetTimeUpdate"), parseTime(minutes), player));
 									}
 									else {
 										plugin.sqlite.query("INSERT INTO playtime (playername, playtime) VALUES('" + player + "', '" + minutes + "');");
-										sender.sendMessage(String.format("[%s] Created entry for %s with%s played", plugin.getDescription().getName(), player, parseTime(minutes)));
+										sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("SetTimeCreate"), player, parseTime(minutes)));
 									}
 									result.close();
 								} catch (NumberFormatException ex) {
-									sender.sendMessage(String.format("[%s] The minutes parameter must be an integer", plugin.getDescription().getName()));
+									sender.sendMessage(plugin.Prefix() + "The minutes parameter must be an integer");
 							    }
 								
 							} else {
-								sender.sendMessage(String.format("[%s] Usage: /tranker settime <player> <minutes>", plugin.getDescription().getName()));
+								sender.sendMessage(plugin.Prefix() + "Usage: /tranker settime <player> <minutes>");
 							}
 						}
 						break;
@@ -130,13 +126,13 @@ public class CommandHandler implements CommandExecutor {
 							if(result2.getInt("cnt") > 0) {
 								while(result.next() && count < 10) {
 									count++;
-									sender.sendMessage(String.format("[%s] %s. %s - %s", plugin.getDescription().getName(), count, result.getString("playername"), parseTime(result.getInt("playtime"))));
+									sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("TopPlayersTemplate"), count, result.getString("playername"), parseTime(result.getInt("playtime"))));
 								}
 							} else {
-								sender.sendMessage(String.format("[%s] No players to show", plugin.getDescription().getName()));
+								sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("TopPlayersEmpty"));
 							}
 						} else {
-							sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 						}
 						break;
 					case "left":
@@ -151,24 +147,24 @@ public class CommandHandler implements CommandExecutor {
 									if(result.getInt("cnt") > 0) {
 										if(minReq - result.getInt("playtime") > 0) {
 											String minLeft = parseTime(minReq - result.getInt("playtime")); //minutes left to play
-											sender.sendMessage(String.format("[%s] You have%s left to play until you get promoted to %s", plugin.getDescription().getName(), minLeft, promoteTo));
+											sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Left"), minLeft, promoteTo));
 										}
 										else {
-											sender.sendMessage(String.format("[%s] You should get promoted to %s in a few minutes", plugin.getDescription().getName(), promoteTo));
+											sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("LeftShortly"), promoteTo));
 										}
 									} else {
 										String minLeft = parseTime(minReq); //minutes left to play
-										sender.sendMessage(String.format("[%s] You have%s left to play until you get promoted to %s", plugin.getDescription().getName(), minLeft, promoteTo));
+										sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Lef"), minLeft, promoteTo));
 									}
 								}
 								else {
-									sender.sendMessage(String.format("[%s] You don't have any promotions pending", plugin.getDescription().getName()));
+									sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("LeftNone"));
 								}
 							} else {
-								sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+								sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 							}
 						} else {
-							sender.sendMessage(String.format("[%s] Only players can use this command", plugin.getDescription().getName()));
+							sender.sendMessage(plugin.Prefix() + "Only players can use this command");
 						}
 						break;
 					case "purge":
@@ -177,17 +173,18 @@ public class CommandHandler implements CommandExecutor {
 							plugin.sqlConnection();
 							plugin.sqlite.query("DROP TABLE playtime");
 							plugin.sqlTableCheck();
-							sender.sendMessage(String.format("[%s] Database purged", plugin.getDescription().getName()));
+							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("Purge"));
 						} else {
-							sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 						}
 						break;
 					case "reload":
 						if(sender.hasPermission("tranker.reload")) {
-							plugin.getConfig().load(plugin.getDataFolder().getAbsolutePath() + File.separator + "config.yml");
-							sender.sendMessage(String.format("[%s] Config reloaded", plugin.getDescription().getName()));
+							plugin.cfg.reloadConfig();
+							plugin.lang.reloadConfig();
+							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("Reload"));
 						} else {
-							sender.sendMessage(String.format("[%s] You don't have permission to use this command", plugin.getDescription().getName()));
+							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 						}
 						break;
 				}
@@ -196,15 +193,6 @@ public class CommandHandler implements CommandExecutor {
 				plugin.clog.info(String.format("[%s] %s", plugin.getDescription().getName(), e.getMessage()));
 				return false;
 			} catch (SQLException e) {
-				plugin.clog.info(String.format("[%s] %s", plugin.getDescription().getName(), e.getMessage()));
-				return false;
-			} catch (FileNotFoundException e) {
-				plugin.clog.info(String.format("[%s] %s", plugin.getDescription().getName(), e.getMessage()));
-				return false;
-			} catch (IOException e) {
-				plugin.clog.info(String.format("[%s] %s", plugin.getDescription().getName(), e.getMessage()));
-				return false;
-			} catch (InvalidConfigurationException e) {
 				plugin.clog.info(String.format("[%s] %s", plugin.getDescription().getName(), e.getMessage()));
 				return false;
 			}
@@ -225,15 +213,15 @@ public class CommandHandler implements CommandExecutor {
 		}
 		
 		if(days > 0) {
-			formatted += String.format(" %s day(s)", days);
+			formatted += String.format(" %s " + plugin.lang.getConfig().getString("Days"), days);
 		}
 		
 		if(hours > 0) {
-			formatted += String.format(" %s hour(s)", hours);
+			formatted += String.format(" %s " + plugin.lang.getConfig().getString("Hours"), hours);
 		}
 		
 		if(minutes > 0) {
-			formatted += String.format(" %s minute(s)", minutes);
+			formatted += String.format(" %s " + plugin.lang.getConfig().getString("Minutes"), minutes);
 		}
 		
 		return formatted;

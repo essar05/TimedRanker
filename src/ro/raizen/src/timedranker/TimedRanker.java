@@ -8,9 +8,11 @@ import net.milkbowl.vault.permission.Permission;
 
 import lib.PatPeter.SQLibrary.SQLite;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.royaldev.royalcommands.AFKUtils;
 
 import com.earth2me.essentials.IEssentials;
 
@@ -25,16 +27,22 @@ public class TimedRanker extends JavaPlugin {
 	private Timer timer;
 	private UpdateRankTask rankupdate;
 	private IEssentials ess;
+	public ConfigHandler cfg;
+	public ConfigHandler lang;
 	
 	@Override
 	public void onEnable() {
 		
-		ConfigHandler cfg = new ConfigHandler(this); //Init the config handler
-		cfg.saveDefaultConfiguration(); 
-		clog.info(String.format("[%s] Config loaded", getDescription().getName()));
+		cfg = new ConfigHandler(this, "config.yml"); //Init the config handler
+		cfg.saveDefaultConfig(); 
+		lang = new ConfigHandler(this, "lang.yml"); //Init the config handler
+		lang.saveDefaultConfig(); 
+		clog.info(String.format("[%s] Config files loaded", getDescription().getName()));
+		
 		
 		int hasDependencies = 1;
 		
+		//Check if Essentials is installed
 		if(getConfig().getBoolean("essentialsAfk") == true) {
 			if(getServer().getPluginManager().getPlugin("Essentials") == null) {
 				clog.severe(String.format("[%s] Dependency Essentials not found", getDescription().getName()));
@@ -43,6 +51,15 @@ public class TimedRanker extends JavaPlugin {
 			}
 		}
 		
+		//Check if RoyalCommands is installed
+		if(getConfig().getBoolean("rcmdsAfk") == true) {
+			if(getServer().getPluginManager().getPlugin("RoyalCommands") == null) {
+				clog.severe(String.format("[%s] Dependency RoyalCommands not found", getDescription().getName()));
+				hasDependencies = 0;
+				getPluginLoader().disablePlugin(this);
+			}
+		}
+
 		//Check if Vault is installed
 		if(getServer().getPluginManager().getPlugin("Vault") == null) {
 			clog.severe(String.format("[%s] Dependency Vault not found", getDescription().getName()));
@@ -78,7 +95,6 @@ public class TimedRanker extends JavaPlugin {
 			if(getConfig().getBoolean("essentialsAfk") == true) {
 				ess = (IEssentials) getServer().getPluginManager().getPlugin("Essentials");
 			}
-			
 		}
 	}
 
@@ -130,8 +146,18 @@ public class TimedRanker extends JavaPlugin {
         return (perms != null);    
 	}
 	
-	public boolean isAfk(String player) {
-		return ess.getOfflineUser(player).isAfk();
+	public boolean isAfk(Player player) {
+		boolean afk = false, afk2 = false;
+		if(getConfig().getBoolean("essentialsAfk") == true) {
+			afk = ess.getOfflineUser(player.getName()).isAfk();
+		} else if(getConfig().getBoolean("rcmdsAfk") == true) {
+			//return rcmds.isAfk(player);
+			afk2 = AFKUtils.isAfk(player);
+		}
+		if(afk == true || afk2 == true) {
+			return true;
+		}
+		else return false;
 	}
 	
 	public int timeInMinutes(String s) {
@@ -159,6 +185,12 @@ public class TimedRanker extends JavaPlugin {
 		if(getConfig().getBoolean("debugInfo") == true) {
 			clog.info(String.format("[%s][Debug] %s", getDescription().getName(), s));
 		}
+	}
+
+	public String Prefix() {
+		if(lang.getConfig().getString("Prefix") == "" || lang.getConfig().getString("Prefix") == null)
+			return "";
+		else return lang.getConfig().getString("Prefix") + " ";
 	}
 	
 }

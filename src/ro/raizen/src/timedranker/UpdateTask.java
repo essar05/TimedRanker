@@ -27,7 +27,7 @@ public class UpdateTask extends TimerTask {
 			
 			int toCount = 1;
 			
-			if(plugin.getConfig().getBoolean("essentialsAfk") == true && plugin.isAfk(PlayerName)) {
+			if(plugin.isAfk(onlinePlayers[i])) {
 				toCount = 0; //don't count player if he's AFK;
 			}
 			

@@ -1,9 +1,12 @@
-#If the player is AFK, don't count gameplay time
+#Integrate Essentials AFK
 essentialsAfk: false
+#Integrate RoyalCommands AFK
+rcmdsAfk: false
 #Debug mode. If you don't know what you're doing, leave it false
 debugInfo: false
 promote:
-   group1: #Group to be promoted from
+   #Group to be promoted from
+   group1: 
        #Group to be promoted to
        to: group2
        #After specified amount of time played. Usage: d - for days, h - for hours, m - for minutes; use spaces between days, hours and minutes
