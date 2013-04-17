@@ -24,4 +24,4 @@ You need to compile against Bukkit 1.5.1-R.02 and the following:
 * [Vault] (http://dev.bukkit.org/server-mods/vault/)
 * [SQLibrary] (http://dev.bukkit.org/server-mods/sqlibrary/)
 * [Essentials] (http://dev.bukkit.org/server-mods/essentials/)
-* [RoyalCommands] (http://dev.bukkit.org/server-mods/royalcommands/) (if rcmdsAfk is set to "true" in the config. Note: You need 0.2.8 for Bukkit 1.5.1-R0.2, which can be currently downloaded [here] (http://build.royaldev.org/browse/RBUILDS-RCMDS-50/artifact/JOB1/Plugin-Jars/target))
+* [RoyalCommands] (http://dev.bukkit.org/server-mods/royalcommands/) (Note: You need 0.2.8 for Bukkit 1.5.1-R0.2, which can be currently downloaded [here] (http://build.royaldev.org/browse/RBUILDS-RCMDS-50/artifact/JOB1/Plugin-Jars/target))
