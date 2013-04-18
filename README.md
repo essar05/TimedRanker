@@ -18,10 +18,10 @@ Features
 * Uses Vault for permission management
 * Stores total gameplay time in an SQLite .db file
 
-Chnagelog
+Changelog
 ---------
 
-v1.3
+**v1.3**
 
 *Added per world promotions
 *Added option to choose how often the plugin checks for promotions
@@ -31,11 +31,12 @@ v1.3
 *Added defaultGroup in config.yml
 *Made config.yml easier to read and added extra comments to help server admins
 
-v1.2
+**v1.2**
+
 *Added RoyalCommands AFK Integration
 *Added lang.yml for message configuration
 
-v1.1
+**v1.1**
 
 *Added Essentials AFK Integration
 *Added command /tranker left
@@ -43,7 +44,7 @@ v1.1
 *Changed how time required for rankup is set in the config file
 *Some minor fixes for some commands
 
-v1.0
+**v1.0**
 
 *Initial Release
 
