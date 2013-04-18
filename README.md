@@ -18,6 +18,35 @@ Features
 * Uses Vault for permission management
 * Stores total gameplay time in an SQLite .db file
 
+Chnagelog
+---------
+
+v1.3
+
+*Added per world promotions
+*Added option to choose how often the plugin checks for promotions
+*Added perworld.yml for setting up world specific promotions
+*Minor fixes and code clean-up
+*Changed debugInfo to debugMode in config.yml
+*Added defaultGroup in config.yml
+*Made config.yml easier to read and added extra comments to help server admins
+
+v1.2
+*Added RoyalCommands AFK Integration
+*Added lang.yml for message configuration
+
+v1.1
+
+*Added Essentials AFK Integration
+*Added command /tranker left
+*Added debugInfo configuration option
+*Changed how time required for rankup is set in the config file
+*Some minor fixes for some commands
+
+v1.0
+
+*Initial Release
+
 Dependencies
 ------------
 
