@@ -28,6 +28,7 @@ public class TimedRanker extends JavaPlugin {
 	private UpdateRankTask rankupdate;
 	private IEssentials ess;
 	public ConfigHandler cfg;
+	public ConfigHandler perworld;
 	public ConfigHandler lang;
 	
 	@Override
@@ -36,7 +37,9 @@ public class TimedRanker extends JavaPlugin {
 		cfg = new ConfigHandler(this, "config.yml"); //Init the config handler
 		cfg.saveDefaultConfig(); 
 		lang = new ConfigHandler(this, "lang.yml"); //Init the config handler
-		lang.saveDefaultConfig(); 
+		lang.saveDefaultConfig();
+		perworld = new ConfigHandler(this, "perworld.yml"); //Init the config handler
+		perworld.saveDefaultConfig(); 
 		clog.info(String.format("[%s] Config files loaded", getDescription().getName()));
 		
 		
@@ -82,6 +85,10 @@ public class TimedRanker extends JavaPlugin {
 			sqlConnection();
 			sqlTableCheck();
 			
+			if(getConfig().getBoolean("essentialsAfk") == true) {
+				ess = (IEssentials) getServer().getPluginManager().getPlugin("Essentials");
+			}
+			
 			tempdata = new TempData(this); //Init the object that holds temporary data
 			getCommand("tranker").setExecutor(new CommandHandler(this, perms)); //Init the executor for tranker command
 			rankupdate = new UpdateRankTask(this, perms, tempdata); //Init the object that updates ranks, when neccesary
@@ -92,14 +99,13 @@ public class TimedRanker extends JavaPlugin {
 			UpdateTask update = new UpdateTask(this); 
 			timer.scheduleAtFixedRate(update, 60000, 60000); //Set up the UpdateTask to run every minute, updating temp data.
 			
-			if(getConfig().getBoolean("essentialsAfk") == true) {
-				ess = (IEssentials) getServer().getPluginManager().getPlugin("Essentials");
-			}
 		}
 	}
 
 	@Override
 	public void onDisable() {
+		tempdata.save();
+		tempdata.purge();
 		if(sqlite != null) {
 			sqlite.close();
 		}
@@ -148,9 +154,9 @@ public class TimedRanker extends JavaPlugin {
 	
 	public boolean isAfk(Player player) {
 		boolean afk = false, afk2 = false;
-		if(getConfig().getBoolean("essentialsAfk") == true) {
+		if(cfg.getConfig().getBoolean("essentialsAfk") == true) {
 			afk = ess.getOfflineUser(player.getName()).isAfk();
-		} else if(getConfig().getBoolean("rcmdsAfk") == true) {
+		} else if(cfg.getConfig().getBoolean("rcmdsAfk") == true) {
 			//return rcmds.isAfk(player);
 			afk2 = AFKUtils.isAfk(player);
 		}
@@ -182,7 +188,7 @@ public class TimedRanker extends JavaPlugin {
 	}
 	
 	public void debugInfo(String s) {
-		if(getConfig().getBoolean("debugInfo") == true) {
+		if(cfg.getConfig().getBoolean("debugMode") == true) {
 			clog.info(String.format("[%s][Debug] %s", getDescription().getName(), s));
 		}
 	}

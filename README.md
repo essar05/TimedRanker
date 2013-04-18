@@ -10,9 +10,11 @@ Features
 
 * Records total minutes online on server
 * Easy to use configuration
+* Per World (World Specific) promotions supported (if Permission plugin supports it as well)
+* Customize how often promotion check is run to optimize plugin for your server
 * Essentials AFK Integration
 * RoyalCommands AFK Integration
-* lang.yml file for message customization
+* lang.yml file for easy message customization
 * Uses Vault for permission management
 * Stores total gameplay time in an SQLite .db file
 

@@ -1,0 +1,26 @@
+#You should only edit this file if you set worldSpecificGroups in config.yml
+#Otherwise, set-up promotions in config.yml
+promote:
+
+   #The promotions below are specific for the world "exampleworld"
+   exampleworld: 
+
+       #Group to be promoted from
+       group1: 
+           #Group to be promoted to
+           to: group2
+       
+           #After specified amount of time played. Usage: d - for days, h - for hours, m - for minutes; 
+           #use spaces between days, hours and minutes
+           timeReq: 1h 2m
+
+       group2:
+           to: group3
+           timeReq: 2d 3h
+
+   #The promotions below are specific for the world "exampleworld2"
+   exampleworld2:
+
+       group1:
+           to: group3
+           timeReq: 2h 30m

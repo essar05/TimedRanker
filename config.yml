@@ -1,16 +1,38 @@
-#Integrate Essentials AFK
+#Integrate Essentials AFK (default: false)
 essentialsAfk: false
-#Integrate RoyalCommands AFK
+
+#Integrate RoyalCommands AFK (default: false)
 rcmdsAfk: false
-#Debug mode. If you don't know what you're doing, leave it false
-debugInfo: false
+
+#Debug mode. If you don't know what you're doing, leave it false (default: false)
+debugMode: false
+
+#How often, in minutes, does the server check for promotions (default: 5)
+checkPeriod: 5
+
+#Default group for new players
+defaultGroup: default
+
+#If groups are set-up per world. Eg. in world "creative" the player is in group "moderator", 
+#but in world "survival" player is in group "user"
+#Only enable this if your permission plugin supports per-world groups.
+#Notice: If you enable this, the plugin will use perworld.yml
+#so you'll need to set up rank promotions in that file instead of this
+#(default: false)
+worldSpecificGroups: false
+
+#Promotions list
 promote:
+
    #Group to be promoted from
    group1: 
        #Group to be promoted to
        to: group2
-       #After specified amount of time played. Usage: d - for days, h - for hours, m - for minutes; use spaces between days, hours and minutes
+       
+       #After specified amount of time played. Usage: d - for days, h - for hours, m - for minutes; 
+       #use spaces between days, hours and minutes
        timeReq: 1h 2m
+
    group2:
        to: group3
        timeReq: 2d 3h

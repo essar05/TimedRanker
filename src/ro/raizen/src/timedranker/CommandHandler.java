@@ -138,28 +138,78 @@ public class CommandHandler implements CommandExecutor {
 					case "left":
 						if(sender instanceof Player) {
 							if(sender.hasPermission("tranker.left")) {
-								String currentGroup = perms.getPrimaryGroup((Player) sender); //get player's current group
-								if(currentGroup == null) currentGroup = "default"; //if it's null, we'll set it to default
-								if(plugin.getConfig().contains("promote." + currentGroup)) {
-									int minReq = plugin.timeInMinutes(plugin.getConfig().getString("promote." + currentGroup + ".timeReq")); //get the required minutes played from the config
-									String promoteTo = plugin.getConfig().getString("promote." + currentGroup + ".to"); //get the group the player must be ranked-up to
-									ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + sender.getName() + "';");
-									if(result.getInt("cnt") > 0) {
-										if(minReq - result.getInt("playtime") > 0) {
-											String minLeft = parseTime(minReq - result.getInt("playtime")); //minutes left to play
-											sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Left"), minLeft, promoteTo));
+								
+								if(plugin.cfg.getConfig().getBoolean("worldSpecificGroups")) {
+									
+									String world = ((Player) sender).getWorld().getName();
+									String player = ((Player) sender).getName();
+									
+									String currentGroup = perms.getPrimaryGroup(world, player); //get player's current group in current world
+									if(currentGroup == null) {
+										if(plugin.cfg.getConfig().getString("defaultGroup") != "" && plugin.cfg.getConfig().getString("defaultGroup") != null) {
+											currentGroup = plugin.cfg.getConfig().getString("defaultGroup");
 										}
 										else {
-											sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("LeftShortly"), promoteTo));
+											currentGroup = "default";
 										}
-									} else {
-										String minLeft = parseTime(minReq); //minutes left to play
-										sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Lef"), minLeft, promoteTo));
 									}
+									
+									if(plugin.perworld.getConfig().contains("promote." + world + "." + currentGroup)) {
+										int minReq = plugin.timeInMinutes(plugin.perworld.getConfig().getString("promote." + world + "." + currentGroup + ".timeReq")); //get the required minutes played from the config
+										String promoteTo = plugin.perworld.getConfig().getString("promote." + world + "." + currentGroup + ".to"); //get the group the player must be ranked-up to
+										ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + sender.getName() + "';");
+										if(result.getInt("cnt") > 0) {
+											if(minReq - result.getInt("playtime") > 0) {
+												String minLeft = parseTime(minReq - result.getInt("playtime")); //minutes left to play
+												sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Left"), minLeft, promoteTo));
+											}
+											else {
+												sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("LeftShortly"), promoteTo));
+											}
+										} else {
+											String minLeft = parseTime(minReq); //minutes left to play
+											sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Left"), minLeft, promoteTo));
+										}
+									}
+									else {
+										sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("LeftNone"));
+									}
+								
+								} else {
+									String world = null;
+									String currentGroup = perms.getPrimaryGroup(world, ((Player) sender).getName()); //get player's current group
+									if(currentGroup == null) {
+										if(plugin.cfg.getConfig().getString("defaultGroup") != "" && plugin.cfg.getConfig().getString("defaultGroup") != null) {
+											currentGroup = plugin.cfg.getConfig().getString("defaultGroup");
+										}
+										else {
+											currentGroup = "default";
+										}
+									}
+									
+									if(plugin.cfg.getConfig().contains("promote." + currentGroup)) {
+										int minReq = plugin.timeInMinutes(plugin.cfg.getConfig().getString("promote." + currentGroup + ".timeReq")); //get the required minutes played from the config
+										String promoteTo = plugin.cfg.getConfig().getString("promote." + currentGroup + ".to"); //get the group the player must be ranked-up to
+										ResultSet result = plugin.sqlite.query("SELECT COUNT(*) as cnt, playtime FROM playtime WHERE playername = '" + sender.getName() + "';");
+										if(result.getInt("cnt") > 0) {
+											if(minReq - result.getInt("playtime") > 0) {
+												String minLeft = parseTime(minReq - result.getInt("playtime")); //minutes left to play
+												sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Left"), minLeft, promoteTo));
+											}
+											else {
+												sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("LeftShortly"), promoteTo));
+											}
+										} else {
+											String minLeft = parseTime(minReq); //minutes left to play
+											sender.sendMessage(String.format(plugin.Prefix() + plugin.lang.getConfig().getString("Left"), minLeft, promoteTo));
+										}
+									}
+									else {
+										sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("LeftNone"));
+									}
+									
 								}
-								else {
-									sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("LeftNone"));
-								}
+								
 							} else {
 								sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("noPermission"));
 							}
@@ -181,6 +231,9 @@ public class CommandHandler implements CommandExecutor {
 					case "reload":
 						if(sender.hasPermission("tranker.reload")) {
 							plugin.cfg.reloadConfig();
+							if(plugin.cfg.getConfig().getBoolean("worldSpecificGroups")) {
+								plugin.perworld.reloadConfig();
+							}
 							plugin.lang.reloadConfig();
 							sender.sendMessage(plugin.Prefix() + plugin.lang.getConfig().getString("Reload"));
 						} else {
