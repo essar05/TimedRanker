@@ -112,7 +112,7 @@ public class TimedRanker extends JavaPlugin {
 		if(timer != null) {
 			timer.cancel();
 		}
-		this.getServer().getScheduler().cancelAllTasks();
+		this.getServer().getScheduler().cancelTasks(this);
 	}
 	
 	public void sqlTableCheck() {
@@ -198,5 +198,26 @@ public class TimedRanker extends JavaPlugin {
 			return "";
 		else return lang.getConfig().getString("Prefix") + " ";
 	}
+	
+    public String getLang(String path) {
+    	if(lang.getConfig().contains(path) && lang.getConfig().getString(path) != "") {
+    		String s = lang.getConfig().getString(path);
+    		return parseString(s);
+    	} else {
+    		return null;
+    	}
+    }
+    
+    //Format a string to have the plugin prefix in front of it
+    public String parseString(String s) {
+    	if(lang.getConfig().contains("Prefix") && lang.getConfig().getString("Prefix") != "") {
+    		String parsed = lang.getConfig().getString("Prefix") + s;
+    		parsed = parsed.replace("$", "§");
+    		return parsed;
+    	} else {
+    		s = s.replace("$", "§");
+    		return s;
+    	}
+    }
 	
 }

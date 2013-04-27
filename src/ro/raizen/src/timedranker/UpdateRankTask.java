@@ -70,7 +70,7 @@ public class UpdateRankTask implements Listener,Runnable {
 							if(result.getInt("playtime") >= minReq) { //if his total playtime is higher than the minimum required
 								perms.playerAddGroup(world, p.getName(), promoteTo); //add new group
 								perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
-								p.sendMessage(plugin.Prefix() + String.format(plugin.lang.getConfig().getString("PromotionMessageWorld"), promoteTo, world));
+								p.sendMessage(String.format(plugin.getLang("PromotionMessageWorld"), promoteTo, world));
 								plugin.debugInfo(p.getName() + " promoted in world " + world);
 							}
 						}
@@ -96,7 +96,7 @@ public class UpdateRankTask implements Listener,Runnable {
 						if(result.getInt("playtime") >= minReq) { //if his total playtime is higher than the minimum required
 							perms.playerAddGroup(world, p.getName(), promoteTo); //add new group
 							perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
-							p.sendMessage(plugin.Prefix() + String.format(plugin.lang.getConfig().getString("PromotionMessage"), promoteTo));
+							p.sendMessage(String.format(plugin.getLang("PromotionMessage"), promoteTo));
 							plugin.debugInfo(p.getName() + " promoted");
 						}
 					}
