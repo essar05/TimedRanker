@@ -1,4 +1,4 @@
-Prefix: '$b[TimedRanker]$e '
+Prefix: '&b[TimedRanker]&e '
 PromotionMessage: 'Congratulations ! You have been promoted to %s !'
 PromotionMessageWorld: 'Congratulations ! You have been promoted to %s in world %s !'
 Minutes: 'minute(s)'

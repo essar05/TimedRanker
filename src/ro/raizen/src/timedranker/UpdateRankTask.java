@@ -69,7 +69,9 @@ public class UpdateRankTask implements Listener,Runnable {
 							String promoteTo = plugin.perworld.getConfig().getString("promote." + world + "." + currentGroup + ".to"); //get the group the player must be ranked-up to
 							if(result.getInt("playtime") >= minReq) { //if his total playtime is higher than the minimum required
 								perms.playerAddGroup(world, p.getName(), promoteTo); //add new group
-								perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
+								if(plugin.getServer().getPluginManager().getPlugin("Privileges") == null) {
+									perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
+								}
 								p.sendMessage(String.format(plugin.getLang("PromotionMessageWorld"), promoteTo, world));
 								plugin.debugInfo(p.getName() + " promoted in world " + world);
 							}
@@ -95,7 +97,9 @@ public class UpdateRankTask implements Listener,Runnable {
 						String promoteTo = plugin.cfg.getConfig().getString("promote." + currentGroup + ".to"); //get the group the player must be ranked-up to
 						if(result.getInt("playtime") >= minReq) { //if his total playtime is higher than the minimum required
 							perms.playerAddGroup(world, p.getName(), promoteTo); //add new group
-							perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
+							if(plugin.getServer().getPluginManager().getPlugin("Privileges") == null) {
+								perms.playerRemoveGroup(world, p.getName(), currentGroup); //remove old group
+							}
 							p.sendMessage(String.format(plugin.getLang("PromotionMessage"), promoteTo));
 							plugin.debugInfo(p.getName() + " promoted");
 						}

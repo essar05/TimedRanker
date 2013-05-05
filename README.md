@@ -21,6 +21,12 @@ Features
 Changelog
 ---------
 
+**v1.3.6**
+
+* Update to CB 1.5.2-R0.1 
+* Fixed Privileges not promoting
+* Updated ChatColor parsing and lang.yml
+
 **v1.3.5**
 
 * Support for colors in lang.yml
@@ -63,7 +69,7 @@ Changelog
 Dependencies
 ------------
 
-You need to compile against Bukkit 1.5.1-R.02 and the following:
+You need to compile against Bukkit 1.5.2-R0.1 and the following:
 
 * [Vault] (http://dev.bukkit.org/server-mods/vault/)
 * [SQLibrary] (http://dev.bukkit.org/server-mods/sqlibrary/)

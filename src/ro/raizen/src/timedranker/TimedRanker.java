@@ -1,6 +1,7 @@
 package ro.raizen.src.timedranker;
 
 import java.sql.SQLException;
+
 import java.util.Timer;
 import java.util.logging.Logger;
 
@@ -17,6 +18,7 @@ import org.royaldev.royalcommands.AFKUtils;
 import com.earth2me.essentials.IEssentials;
 
 import ro.raizen.src.timedranker.config.ConfigHandler;
+import org.bukkit.ChatColor;
 
 public class TimedRanker extends JavaPlugin {
 	
@@ -211,12 +213,9 @@ public class TimedRanker extends JavaPlugin {
     //Format a string to have the plugin prefix in front of it
     public String parseString(String s) {
     	if(lang.getConfig().contains("Prefix") && lang.getConfig().getString("Prefix") != "") {
-    		String parsed = lang.getConfig().getString("Prefix") + s;
-    		parsed = parsed.replace("$", "§");
-    		return parsed;
+    		return ChatColor.translateAlternateColorCodes('&', lang.getConfig().getString("Prefix") + s);
     	} else {
-    		s = s.replace("$", "§");
-    		return s;
+    		return ChatColor.translateAlternateColorCodes('&', s);
     	}
     }
 	
