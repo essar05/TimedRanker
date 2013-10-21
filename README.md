@@ -16,10 +16,20 @@ Features
 * RoyalCommands AFK Integration
 * lang.yml file for easy message customization
 * Uses Vault for permission management
-* Stores total gameplay time in an SQLite .db file
+* Stores total gameplay time in an SQLite .db file or MySQL database
 
 Changelog
 ---------
+
+**v1.4.1**
+
+* Update to CB 1.6.4-R0.1
+* Added support for MySQL databases
+* Added feature for converting old SQLite databases to MySQL
+* Added feature which deletes players who haven't logged in for a configurable amount of time from the database
+* Added command for adding playtime to a player
+* Added command to delete a player from the database
+* Minor fixes to some commands and methods
 
 **v1.3.6**
 
@@ -69,9 +79,9 @@ Changelog
 Dependencies
 ------------
 
-You need to compile against Bukkit 1.5.2-R0.1 and the following:
+You need to compile against Bukkit 1.6.4-R0.1 and the following:
 
 * [Vault] (http://dev.bukkit.org/server-mods/vault/)
 * [SQLibrary] (http://dev.bukkit.org/server-mods/sqlibrary/)
 * [Essentials] (http://dev.bukkit.org/server-mods/essentials/)
-* [RoyalCommands] (http://dev.bukkit.org/server-mods/royalcommands/) (Note: You need 0.2.8 for Bukkit 1.5.1-R0.2, which can be currently downloaded [here] (http://build.royaldev.org/browse/RBUILDS-RCMDS-50/artifact/JOB1/Plugin-Jars/target))
+* [RoyalCommands] (http://dev.bukkit.org/server-mods/royalcommands/)

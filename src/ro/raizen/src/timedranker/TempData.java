@@ -31,15 +31,16 @@ public class TempData {
 		Set<String> keys = data.keySet(); //get keys in hashmap and iterate through them
 		for(String s : keys) {
 			try {
-				ResultSet result = plugin.sqlite.query("SELECT count(*) AS cnt, playtime FROM playtime WHERE playername = '" + s + "';");
+				ResultSet result = plugin.sql.query("SELECT count(*) AS cnt, playtime FROM playtime WHERE playername = '" + s + "';");
+				result.next();
 				int count = result.getInt("cnt");
 				if(count > 0) { //if the current player is in the table, update his playtime
 					int TotalTime = result.getInt("playtime");
 					TotalTime += data.get(s);
-					plugin.sqlite.query("UPDATE playtime SET playtime='" + TotalTime + "' WHERE playername = '" + s + "';");
+					plugin.sql.query("UPDATE playtime SET playtime='" + TotalTime + "' WHERE playername = '" + s + "';");
 				}
 				else { //otherwise insert him in the table
-					plugin.sqlite.query("INSERT INTO playtime(id, playername, playtime) VALUES (NULL, '" + s + "', '" + data.get(s) + "');");
+					plugin.sql.query("INSERT INTO playtime(id, playername, playtime) VALUES (NULL, '" + s + "', '" + data.get(s) + "');");
 				}
 				result.close();
 			} catch (SQLException e) {

@@ -45,7 +45,8 @@ public class UpdateRankTask implements Listener,Runnable {
 	
 	private void CheckPlayer(Player p) {
 		try {
-			ResultSet result = plugin.sqlite.query("SELECT COUNT(id) AS cnt,playtime FROM playtime WHERE playername = '" + p.getName() + "';");
+			ResultSet result = plugin.sql.query("SELECT COUNT(id) AS cnt,playtime FROM playtime WHERE playername = '" + p.getName() + "';");
+			result.next();
 			if(result.getInt("cnt") > 0) { //check if player has an entry in the database
 				
 				//Check if promotions should be checked/set per world

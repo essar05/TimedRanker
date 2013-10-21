@@ -1,3 +1,14 @@
+#true for MySQL and false for SQLite
+useMySQL: false
+
+#MySql databse information, if useMySQL is set to true
+mysql:
+  user: 'mysql_username'
+  port: 3306
+  password: 'mysql_password'
+  host: 'mysql_host'
+  database: 'mysql_database'
+
 #Integrate Essentials AFK (default: false)
 essentialsAfk: false
 
@@ -9,6 +20,9 @@ debugMode: false
 
 #How often, in minutes, does the server check for promotions (default: 5)
 checkPeriod: 5
+
+#Delete players from the database who haven't logged in the set amoutn of days. Set 0 to disable.
+purgeAfter: 0
 
 #Default group for new players
 defaultGroup: default

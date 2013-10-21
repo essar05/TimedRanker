@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
+import lib.PatPeter.SQLibrary.MySQL;
 import lib.PatPeter.SQLibrary.SQLite;
 
 import org.bukkit.entity.Player;
@@ -24,6 +25,8 @@ public class TimedRanker extends JavaPlugin {
 	
 	public Logger clog = Logger.getLogger("Minecraft");
 	public SQLite sqlite;
+	public Database sql;
+	public MySQL mysql;
 	public TempData tempdata;
 	public static Permission perms = null;
 	private Timer timer;
@@ -48,7 +51,7 @@ public class TimedRanker extends JavaPlugin {
 		int hasDependencies = 1;
 		
 		//Check if Essentials is installed
-		if(getConfig().getBoolean("essentialsAfk") == true) {
+		if(cfg.getConfig().getBoolean("essentialsAfk") == true) {
 			if(getServer().getPluginManager().getPlugin("Essentials") == null) {
 				clog.severe(String.format("[%s] Dependency Essentials not found", getDescription().getName()));
 				hasDependencies = 0;
@@ -57,7 +60,7 @@ public class TimedRanker extends JavaPlugin {
 		}
 		
 		//Check if RoyalCommands is installed
-		if(getConfig().getBoolean("rcmdsAfk") == true) {
+		if(cfg.getConfig().getBoolean("rcmdsAfk") == true) {
 			if(getServer().getPluginManager().getPlugin("RoyalCommands") == null) {
 				clog.severe(String.format("[%s] Dependency RoyalCommands not found", getDescription().getName()));
 				hasDependencies = 0;
@@ -87,7 +90,9 @@ public class TimedRanker extends JavaPlugin {
 			sqlConnection();
 			sqlTableCheck();
 			
-			if(getConfig().getBoolean("essentialsAfk") == true) {
+			sql = new Database(this);
+			
+			if(cfg.getConfig().getBoolean("essentialsAfk") == true) {
 				ess = (IEssentials) getServer().getPluginManager().getPlugin("Essentials");
 			}
 			
@@ -101,6 +106,10 @@ public class TimedRanker extends JavaPlugin {
 			UpdateTask update = new UpdateTask(this); 
 			timer.scheduleAtFixedRate(update, 60000, 60000); //Set up the UpdateTask to run every minute, updating temp data.
 			
+			if(cfg.getConfig().getInt("purgeAfter") > 0) {
+				PurgeTask purge = new PurgeTask(this);
+				getServer().getScheduler().runTaskTimer(this, purge, 200 , 20*60*60*24);
+			}
 		}
 	}
 
@@ -108,9 +117,7 @@ public class TimedRanker extends JavaPlugin {
 	public void onDisable() {
 		tempdata.save();
 		tempdata.purge();
-		if(sqlite != null) {
-			sqlite.close();
-		}
+		sql.close();
 		if(timer != null) {
 			timer.cancel();
 		}
@@ -118,25 +125,54 @@ public class TimedRanker extends JavaPlugin {
 	}
 	
 	public void sqlTableCheck() {
-		if(sqlite.isTable("playtime")) {
-			return;
+		if(mysql == null) {
+			if(sqlite.isTable("playtime")) {
+				return;
+			} else {
+				try {
+					sqlite.query("CREATE TABLE playtime (id INTEGER PRIMARY KEY AUTOINCREMENT, playername VARCHAR(50), playtime INT);");
+					clog.info(String.format("[%s] Table 'playtime' has been created.", getDescription().getName()));
+				} catch (SQLException e) {
+					clog.info(String.format("[%s] %s", getDescription().getName(), e.getMessage()));
+				}
+			}
 		} else {
-			try {
-				sqlite.query("CREATE TABLE playtime (id INTEGER PRIMARY KEY AUTOINCREMENT, playername VARCHAR(50), playtime INT);");
-				clog.info(String.format("[%s] Table 'playtime' has been created.", getDescription().getName()));
-			} catch (SQLException e) {
-				clog.info(String.format("[%s] %s", getDescription().getName(), e.getMessage()));
+			if(mysql.isTable("playtime")) {
+				return;
+			} else {
+				try {
+					mysql.query("CREATE TABLE playtime (id INTEGER AUTO_INCREMENT, playername VARCHAR(50), playtime INT, PRIMARY KEY (`id`));");
+					clog.info(String.format("[%s] Table 'playtime' has been created.", getDescription().getName()));
+				} catch (SQLException e) {
+					clog.info(String.format("[%s] %s", getDescription().getName(), e.getMessage()));
+				}
 			}
 		}
 	}
 
 	public void sqlConnection() {
-		sqlite = new SQLite(clog, "Timed Ranker", this.getDataFolder().getAbsolutePath(), "playtime");
-		try {
-			sqlite.open();
-		} catch (Exception e) {
-			clog.info(String.format("[%s] %s", getDescription().getName(), e.getMessage()));
-			this.getPluginLoader().disablePlugin(this);
+		if(getConfig().getBoolean("useMySQL") == true) {
+			mysql = new MySQL(clog, 
+					getDescription().getName() + " ", 
+					cfg.getConfig().getString("mysql.host"), 
+					cfg.getConfig().getInt("mysql.port"),
+					cfg.getConfig().getString("mysql.database"), 
+					cfg.getConfig().getString("mysql.username"), 
+					cfg.getConfig().getString("mysql.password"));
+			try {
+				mysql.open();
+			} catch (Exception e) {
+				clog.info(String.format("[%s] %s", getDescription().getName(), e.getMessage()));
+				this.getPluginLoader().disablePlugin(this);
+			}
+		} else {
+			sqlite = new SQLite(clog, "Timed Ranker", this.getDataFolder().getAbsolutePath(), "playtime");
+			try {
+				sqlite.open();
+			} catch (Exception e) {
+				clog.info(String.format("[%s] %s", getDescription().getName(), e.getMessage()));
+				this.getPluginLoader().disablePlugin(this);
+			}
 		}
 	}
 	
@@ -219,4 +255,6 @@ public class TimedRanker extends JavaPlugin {
     	}
     }
 	
+    
+    
 }
