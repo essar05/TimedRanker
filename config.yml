@@ -3,7 +3,7 @@ useMySQL: false
 
 #MySql databse information, if useMySQL is set to true
 mysql:
-  user: 'mysql_username'
+  username: 'mysql_username'
   port: 3306
   password: 'mysql_password'
   host: 'mysql_host'
